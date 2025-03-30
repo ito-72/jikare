@@ -108,6 +108,28 @@ button:hover {
   color: white;
 }
 
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #323232;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+#toast.show {
+  opacity: 1;
+}
+
+
 /* ===================== */
 /* Google Fonts Import (HTML <head> 用) */
 /* ===================== */

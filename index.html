@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>自カレ</title>
+  <title>Timely Me</title>
   <link rel="stylesheet" href="style.css">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#ffffff">
@@ -12,16 +12,10 @@
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="/manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-<link rel="apple-touch-icon" href="/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
-
-
-
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" href="/icon-192.png">
 </head>
-
-
 
 <body>
   <h1>Timely Me</h1>
@@ -35,7 +29,7 @@
   <!-- 入力フォーム -->
   <form id="taskForm">
     <label>年:
-      <input type="number" id="yearInput" value="2025" min="2023" required>
+      <input type="number" id="yearInput" min="2023" required>
     </label><br>
     <label>月:
       <select id="monthInput" required>
@@ -43,15 +37,14 @@
         <option value="2">2月</option>
         <option value="3">3月</option>
         <option value="4">4月</option>
-<option value="5">5月</option>
+        <option value="5">5月</option>
         <option value="6">6月</option>
         <option value="7">7月</option>
         <option value="8">8月</option>
-<option value="9">9月</option>
+        <option value="9">9月</option>
         <option value="10">10月</option>
         <option value="11">11月</option>
         <option value="12">12月</option>
-
       </select>
     </label><br>
     <label>日:
@@ -68,58 +61,69 @@
   </form>
 
   <div id="result"></div>
+  <div id="toast">✅ 書き込み成功！</div>
 
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const now = new Date();
+      document.getElementById("yearInput").value = now.getFullYear();
+      document.getElementById("monthInput").value = now.getMonth() + 1;
+    });
 
-<script>
-window.addEventListener("DOMContentLoaded", () => {
-  const now = new Date();
-  document.getElementById("yearInput").value = now.getFullYear();
-  document.getElementById("monthInput").value = now.getMonth() + 1; // 月は0始まり
-});
+    let currentUser = "atsushi";
 
+    document.getElementById("atsushiTab").addEventListener("click", () => {
+      currentUser = "atsushi";
+      document.getElementById("atsushiTab").classList.add("active");
+      document.getElementById("chihiroTab").classList.remove("active");
+    });
 
+    document.getElementById("chihiroTab").addEventListener("click", () => {
+      currentUser = "chihiro";
+      document.getElementById("chihiroTab").classList.add("active");
+      document.getElementById("atsushiTab").classList.remove("active");
+    });
 
-  let currentUser = "atsushi";
+    document.getElementById("taskForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  document.getElementById("atsushiTab").addEventListener("click", () => {
-    currentUser = "atsushi";
-    document.getElementById("atsushiTab").classList.add("active");
-    document.getElementById("chihiroTab").classList.remove("active");
-  });
+      const postData = {
+        year: document.getElementById("yearInput").value,
+        month: document.getElementById("monthInput").value,
+        day: document.getElementById("dayInput").value,
+        time: document.getElementById("timeInput").value,
+        task: document.getElementById("taskInput").value,
+        user: currentUser,
+      };
 
-  document.getElementById("chihiroTab").addEventListener("click", () => {
-    currentUser = "chihiro";
-    document.getElementById("chihiroTab").classList.add("active");
-    document.getElementById("atsushiTab").classList.remove("active");
-  });
+      try {
+        const response = await fetch("/api/postTask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(postData),
+        });
 
-  document.getElementById("taskForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+        const result = await response.text();
 
-    const postData = {
-      year: document.getElementById("yearInput").value,
-      month: document.getElementById("monthInput").value,
-      day: document.getElementById("dayInput").value,
-      time: document.getElementById("timeInput").value,
-      task: document.getElementById("taskInput").value,
-      user: currentUser,
-    };
+        if (result.includes("✅")) {
+          showToast("✅ 書き込み成功！");
+        } else {
+          document.getElementById("result").textContent = result;
+        }
 
-    try {
-      const response = await fetch("/api/postTask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postData),
-      });
+      } catch (err) {
+        document.getElementById("result").textContent = "❌ 通信エラー：" + err;
+      }
+    });
 
-      const result = await response.text();
-      document.getElementById("result").textContent = result;
-    } catch (err) {
-      document.getElementById("result").textContent = "❌ 通信エラー：" + err;
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2500);
     }
-  });
-</script>
-
-
-
+  </script>
 </body>
+</html>
