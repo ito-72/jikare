@@ -21,9 +21,9 @@ body {
 /* 見出し */
 /* ===================== */
 h1 {
-  font-family: 'Dancing Script', cursive;
-  font-size: 42px;
-  font-weight: 700;
+  font-family: 'Alex Brush', cursive;
+  font-size: 46px;
+  font-weight: 400;
   margin-bottom: 1em;
   text-align: center;
   background: linear-gradient(to right, #ff9966, #ff5e62);
@@ -109,6 +109,8 @@ button:hover {
 }
 
 /* ===================== */
-/* Google Fonts Import */
+/* Google Fonts Import (HTML <head> 用) */
 /* ===================== */
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+/* 削除：@import は使わず、HTML <head> に以下を追加してください：
+<link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
+*/
