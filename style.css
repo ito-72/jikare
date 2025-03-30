@@ -1,8 +1,89 @@
-#tab button {
-  padding: 10px;
-  margin: 5px;
+/* ===================== */
+/* 📄 全体背景とフォント */
+/* ===================== */
+body {
+  background-color: #f5f7fa; /* ベース色（明るめグレー） */
+  background-image: 
+    linear-gradient(135deg, rgba(255,255,255,0.3) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(255,255,255,0.3) 25%, transparent 25%),
+    linear-gradient(45deg, rgba(0,0,0,0.02) 25%, transparent 25%),
+    linear-gradient(315deg, rgba(0,0,0,0.02) 25%, transparent 25%);
+  background-size: 40px 40px;
+  font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+  font-size: 18px;
+  color: #333;
+  padding: env(safe-area-inset-top, 60px) 20px 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
 }
+
+/* ===================== */
+/* 見出し */
+/* ===================== */
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 1em;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* ===================== */
+/* ラベル・入力欄 */
+/* ===================== */
+label {
+  font-size: 18px;
+  display: block;
+  margin: 0.5em 0 0.2em;
+  color: #444;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.8em;
+  font-size: 18px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-sizing: border-box;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ===================== */
+/* ボタン */
+/* ===================== */
+button {
+  background: linear-gradient(135deg, #ff9800, #e67e22);
+  color: white;
+  font-size: 20px;
+  padding: 0.8em 1.5em;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-top: 1em;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #e67e22, #ff9800);
+}
+
+/* ===================== */
+/* タブ */
+/* ===================== */
+#tab button {
+  border-radius: 12px;
+  font-size: 18px;
+  padding: 0.6em 1.2em;
+  margin: 0 0.5em;
+  background-color: #eee;
+  border: none;
+  color: #555;
+}
+
 #tab .active {
-  background-color: orange;
+  background-color: #ff9800;
   color: white;
 }
