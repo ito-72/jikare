@@ -1,53 +1,22 @@
-/api/postTask.js
+// /api/postTask.js
+import { GAS_URL } from "./config";
 
-// タブ選択状態を保持（デフォルトは篤志）
-let currentUser = "atsushi";
-
-// タブの切り替え処理
-document.getElementById("atsushiTab").addEventListener("click", () => {
-  currentUser = "atsushi";
-  document.getElementById("atsushiTab").classList.add("active");
-  document.getElementById("chihiroTab").classList.remove("active");
-});
-
-document.getElementById("chihiroTab").addEventListener("click", () => {
-  currentUser = "chihiro";
-  document.getElementById("chihiroTab").classList.add("active");
-  document.getElementById("atsushiTab").classList.remove("active");
-});
-
-
-// フォーム送信処理
-document.getElementById("taskForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const year = document.getElementById("yearInput").value;
-  const month = document.getElementById("monthInput").value;
-  const day = document.getElementById("dayInput").value;
-  const time = document.getElementById("timeInput").value;
-  const task = document.getElementById("taskInput").value;
-
-  const postData = {
-    year,
-    month,
-    day,
-    time,
-    task,
-    user: currentUser
-  };
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
 
   try {
     const response = await fetch(GAS_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(postData)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body),
     });
 
     const result = await response.text();
-    document.getElementById("result").textContent = "✅ 登録完了：" + result;
+    res.status(200).send(result);
   } catch (err) {
-    document.getElementById("result").textContent = "❌ エラー：" + err;
+    console.error("API Error:", err);
+    res.status(500).send("❌ サーバーエラー");
   }
-});
+}
