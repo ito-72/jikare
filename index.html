@@ -60,6 +60,49 @@
 
   <div id="result"></div>
 
-  <script src="/api/postTask.js"></script>
+
+<script>
+  let currentUser = "atsushi";
+
+  document.getElementById("atsushiTab").addEventListener("click", () => {
+    currentUser = "atsushi";
+    document.getElementById("atsushiTab").classList.add("active");
+    document.getElementById("chihiroTab").classList.remove("active");
+  });
+
+  document.getElementById("chihiroTab").addEventListener("click", () => {
+    currentUser = "chihiro";
+    document.getElementById("chihiroTab").classList.add("active");
+    document.getElementById("atsushiTab").classList.remove("active");
+  });
+
+  document.getElementById("taskForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const postData = {
+      year: document.getElementById("yearInput").value,
+      month: document.getElementById("monthInput").value,
+      day: document.getElementById("dayInput").value,
+      time: document.getElementById("timeInput").value,
+      task: document.getElementById("taskInput").value,
+      user: currentUser,
+    };
+
+    try {
+      const response = await fetch("/api/postTask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+      });
+
+      const result = await response.text();
+      document.getElementById("result").textContent = result;
+    } catch (err) {
+      document.getElementById("result").textContent = "❌ 通信エラー：" + err;
+    }
+  });
+</script>
+
+
 
 </body>
