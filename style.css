@@ -1,0 +1,8 @@
+#tab button {
+  padding: 10px;
+  margin: 5px;
+}
+#tab .active {
+  background-color: orange;
+  color: white;
+}

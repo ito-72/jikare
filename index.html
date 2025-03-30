@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>自カレ</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+
+
+</head>
+
+
+
+<body>
+  <h1>自分カレンダー</h1>
+
+  <!-- タブ（篤志・千尋） -->
+  <div id="tab">
+    <button id="atsushiTab" class="active">篤志</button>
+    <button id="chihiroTab">千尋</button>
+  </div>
+
+  <!-- 入力フォーム -->
+  <form id="taskForm">
+    <label>年:
+      <input type="number" id="yearInput" value="2025" min="2023" required>
+    </label><br>
+    <label>月:
+      <select id="monthInput" required>
+        <option value="1">1月</option>
+        <option value="2">2月</option>
+        <option value="3" selected>3月</option>
+        <option value="4">4月</option>
+        <!-- 必要に応じて追加 -->
+      </select>
+    </label><br>
+    <label>日:
+      <input type="number" id="dayInput" min="1" max="31" required>
+    </label><br>
+    <label>時刻:
+      <input type="time" id="timeInput" required>
+    </label><br>
+    <label>予定内容:
+      <input type="text" id="taskInput" required>
+    </label><br>
+
+    <button type="submit">送信</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script src="/api/postTask.js"></script>
+</body>
