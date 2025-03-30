@@ -21,11 +21,14 @@ body {
 /* 見出し */
 /* ===================== */
 h1 {
-  font-size: 28px;
-  font-weight: 600;
+  font-family: 'Pacifico', cursive;
+  font-size: 36px;
+  font-weight: 400;
   margin-bottom: 1em;
   text-align: center;
-  color: #2c3e50;
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ===================== */
@@ -93,7 +96,7 @@ button:hover {
   border-radius: 16px;
   font-size: 16px;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: #f0f0f0;
   border: none;
   color: #999;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -103,3 +106,8 @@ button:hover {
   background-color: #ff9800;
   color: white;
 }
+
+/* ===================== */
+/* Google Fonts Import */
+/* ===================== */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
