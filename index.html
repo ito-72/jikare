@@ -41,7 +41,7 @@
       <select id="monthInput" required>
         <option value="1">1月</option>
         <option value="2">2月</option>
-        <option value="3" selected>3月</option>
+        <option value="3">3月</option>
         <option value="4">4月</option>
 <option value="5">5月</option>
         <option value="6">6月</option>
@@ -71,6 +71,14 @@
 
 
 <script>
+window.addEventListener("DOMContentLoaded", () => {
+  const now = new Date();
+  document.getElementById("yearInput").value = now.getFullYear();
+  document.getElementById("monthInput").value = now.getMonth() + 1; // 月は0始まり
+});
+
+
+
   let currentUser = "atsushi";
 
   document.getElementById("atsushiTab").addEventListener("click", () => {
