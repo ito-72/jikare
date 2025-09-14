@@ -64,14 +64,17 @@
         </div>
       </section>
 
-      <!-- ====== 右：閲覧ビュー（見出しテキストは削除） ====== -->
-      <section id="viewer" class="card">
-        <!-- 1行ナビ：Prev / Today / Next / Week・Month / 日付 / Refresh -->
-        <div class="viewerbar">
+      <!-- ====== 右：閲覧ビュー（横スクロール禁止 & 2段ナビ） ====== -->
+      <section id="viewer" class="card viewer">
+        <!-- 上段：Prev / Today / Next -->
+        <div class="viewerbar viewerbar-top">
           <button id="btnPrev" type="button">Prev</button>
           <button id="btnToday" type="button">Today</button>
           <button id="btnNext" type="button">Next</button>
+        </div>
 
+        <!-- 下段：Week・Month / Date / Refresh -->
+        <div class="viewerbar viewerbar-bottom">
           <div class="seg">
             <label><input type="radio" name="viewmode" value="week" checked>Week</label>
             <label><input type="radio" name="viewmode" value="month">Month</label>
@@ -149,7 +152,7 @@
   <!-- ====== Viewer（週／月一覧） ====== -->
   <script>
     (function(){
-      // 公開：外部から手動更新したいときに使用
+      // 公開：外部から手動更新
       window.viewerLoadRows = loadRows;
 
       const fmt = (d)=> {
