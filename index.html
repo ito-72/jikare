@@ -1,129 +1,347 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Remember Me</title>
-  <link rel="stylesheet" href="style.css">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <link rel="manifest" href="/manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Work Planner / A〜G一覧ビュー</title>
+
+  <!-- 既存 CSS を使う想定。なければ下の style 内の最小スタイルを併用 -->
+  <link rel="stylesheet" href="./style.css" />
+
+  <style>
+    /* ===== 最小スタイル（不足時の補助） ===== */
+    :root { --gap: 12px; --border:#ddd; --bg:#fafafa; --muted:#777; }
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; margin: 0; background: #fff; color: #222; }
+    .container { max-width: 960px; margin: 0 auto; padding: 20px; }
+    h1 { font-size: 1.4rem; margin: 0 0 12px; }
+    h2 { font-size: 1.1rem; margin: 0 0 8px; }
+    .grid { display: grid; gap: var(--gap); }
+    @media (min-width: 900px) { .grid.cols-2 { grid-template-columns: 1fr 1fr; } }
+    .card { border: 1px solid var(--border); border-radius: 12px; padding: 14px; background: #fff; }
+    .rows { display: grid; gap: 8px; }
+    .row { display: grid; align-items: center; gap: 8px; grid-template-columns: 120px 1fr; }
+    .row > label { font-size: .95rem; color: #333; }
+    .row input[type="text"], .row input[type="number"], .row input[type="date"], .row input[type="time"], .row select, .row textarea {
+      width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid var(--border); border-radius: 8px; background: #fff;
+    }
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    button { padding: 8px 14px; border-radius: 999px; border: 1px solid var(--border); background: #f4f4f4; cursor: pointer; }
+    button.primary { background: #0059ff; color: #fff; border-color: #0059ff; }
+    .muted { color: var(--muted); font-size: .9rem; }
+
+    /* テーブル周り */
+    .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 10px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; }
+    th, td { border-bottom: 1px solid var(--border); padding: .45rem .6rem; text-align: left; vertical-align: top; white-space: pre-wrap; }
+    thead th { position: sticky; top: 0; background: var(--bg); z-index: 1; }
+
+    /* トグル群 */
+    .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .seg { display: inline-flex; gap: 6px; align-items: center; padding: 4px 8px; border: 1px solid var(--border); border-radius: 999px; background: #fff; }
+  </style>
 </head>
-
 <body>
-  <h1>Remember Me!!</h1>
+  <div class="container">
+    <h1>Work Planner</h1>
 
-  <!-- タブ（篤志・千尋） -->
-  <div id="tab">
-    <button id="atsushiTab" class="active">篤志</button>
-    <button id="chihiroTab">千尋</button>
+    <div class="grid cols-2">
+      <!-- ====== 左：投稿フォーム（既存の書き込みを維持） ====== -->
+      <section class="card" id="postCard">
+        <h2>予定の書き込み（既存）</h2>
+        <div class="rows">
+          <!-- 年/月/日 -->
+          <div class="row">
+            <label for="year">年</label>
+            <input id="year" type="number" placeholder="2025" />
+          </div>
+          <div class="row">
+            <label for="month">月</label>
+            <input id="month" type="number" placeholder="9" />
+          </div>
+          <div class="row">
+            <label for="day">日</label>
+            <input id="day" type="number" placeholder="14" />
+          </div>
+
+          <!-- 時刻/内容 -->
+          <div class="row">
+            <label for="time">時刻</label>
+            <input id="time" type="time" />
+          </div>
+          <div class="row">
+            <label for="task">内容</label>
+            <textarea id="task" rows="3" placeholder="タスク内容"></textarea>
+          </div>
+
+          <!-- ユーザー選択（列マッピングはGAS側：atsushi→C列, chihiro→D列の想定） -->
+          <div class="row">
+            <label for="user">ユーザー</label>
+            <select id="user">
+              <option value="atsushi">篤志</option>
+              <option value="chihiro">千尋</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button id="btnPost" class="primary" type="button">書き込む</button>
+            <span id="postStatus" class="muted"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== 右：閲覧ビュー（A〜G一覧） ====== -->
+      <section id="viewer" class="card">
+        <h2>A〜G一覧（閲覧）</h2>
+
+        <div class="toolbar" style="margin-bottom:8px;">
+          <button id="btnToday" type="button">Today</button>
+          <button id="btnPrev"  type="button">Prev</button>
+          <button id="btnNext"  type="button">Next</button>
+
+          <label class="seg">
+            <input type="radio" name="viewmode" value="week" checked />
+            <span>Week</span>
+          </label>
+          <label class="seg">
+            <input type="radio" name="viewmode" value="month" />
+            <span>Month</span>
+          </label>
+
+          <input id="datePicker" type="date" />
+        </div>
+
+        <div id="rangeLabel" class="muted" style="margin: .25rem 0 .6rem;"></div>
+
+        <div class="table-wrap">
+          <table id="rowsTable">
+            <thead id="rowsThead"></thead>
+            <tbody id="rowsTbody"></tbody>
+          </table>
+        </div>
+
+        <div id="viewerStatus" class="muted" style="margin-top:6px;"></div>
+      </section>
+    </div>
   </div>
 
-  <!-- 入力フォーム -->
-  <form id="taskForm">
-    <label>年:
-      <input type="number" id="yearInput" min="2023" required>
-    </label><br>
-    <label>月:
-      <select id="monthInput" required>
-        <option value="1">1月</option>
-        <option value="2">2月</option>
-        <option value="3">3月</option>
-        <option value="4">4月</option>
-        <option value="5">5月</option>
-        <option value="6">6月</option>
-        <option value="7">7月</option>
-        <option value="8">8月</option>
-        <option value="9">9月</option>
-        <option value="10">10月</option>
-        <option value="11">11月</option>
-        <option value="12">12月</option>
-      </select>
-    </label><br>
-    <label>日:
-      <input type="number" id="dayInput" min="1" max="31" required>
-    </label><br>
-    <label>時刻:
-      <input type="time" id="timeInput">
-    </label><br>
-    <label>予定内容:
-      <input type="text" id="taskInput" required>
-    </label><br>
-
-    <button type="submit">送信</button>
-  </form>
-
-  <div id="result"></div>
-  <div id="toast">✅ 書き込み成功！</div>
-
+  <!-- ====== クライアントサイド スクリプト ====== -->
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
-      const now = new Date();
-      document.getElementById("yearInput").value = now.getFullYear();
-      document.getElementById("monthInput").value = now.getMonth() + 1;
-    });
-
-    let currentUser = "atsushi";
-
-    document.getElementById("atsushiTab").addEventListener("click", () => {
-      currentUser = "atsushi";
-      document.getElementById("atsushiTab").classList.add("active");
-      document.getElementById("chihiroTab").classList.remove("active");
-    });
-
-    document.getElementById("chihiroTab").addEventListener("click", () => {
-      currentUser = "chihiro";
-      document.getElementById("chihiroTab").classList.add("active");
-      document.getElementById("atsushiTab").classList.remove("active");
-    });
-
-    document.getElementById("taskForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const postData = {
-        year: document.getElementById("yearInput").value,
-        month: document.getElementById("monthInput").value,
-        day: document.getElementById("dayInput").value,
-        time: document.getElementById("timeInput").value,
-        task: document.getElementById("taskInput").value,
-        user: currentUser,
+    /******************************************************************
+     * 投稿フォーム（既存）:
+     * /api/postTask へ POST するだけ。GAS 側は既存の doPost(書き込み)が処理。
+     ******************************************************************/
+    (function(){
+      const $ = (id) => document.getElementById(id);
+      const el = {
+        year: $('year'),
+        month: $('month'),
+        day: $('day'),
+        time: $('time'),
+        task: $('task'),
+        user: $('user'),
+        btnPost: $('btnPost'),
+        postStatus: $('postStatus'),
       };
 
-      try {
-        const response = await fetch("/api/postTask", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(postData),
-        });
+      // 初期値（今日）
+      const now = new Date();
+      el.year.value  = now.getFullYear();
+      el.month.value = now.getMonth() + 1;
+      el.day.value   = now.getDate();
 
-        const result = await response.text();
-
-        if (result.includes("✅")) {
-          showToast("書き込み成功っ！");
-        } else {
-          document.getElementById("result").textContent = result;
+      el.btnPost.addEventListener('click', async () => {
+        el.postStatus.textContent = '送信中...';
+        try {
+          const payload = {
+            year: Number(el.year.value),
+            month: Number(el.month.value),
+            day: Number(el.day.value),
+            time: el.time.value || "",
+            task: el.task.value || "",
+            user: el.user.value || "atsushi"
+          };
+          const res = await fetch('/api/postTask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const text = await res.text();
+          el.postStatus.textContent = text || '完了';
+          // 成功後、閲覧側を再読込するなら以下を有効化
+          // if (window.viewerLoadRows) window.viewerLoadRows();
+        } catch (err) {
+          console.error(err);
+          el.postStatus.textContent = '❌ エラー: ' + err.message;
         }
+      });
+    })();
+  </script>
 
-      } catch (err) {
-        document.getElementById("result").textContent = "❌ 通信エラー：" + err;
+  <script>
+    /******************************************************************
+     * 閲覧ビュー（A〜G一覧）:
+     * /api/getRows にパラメータを渡し、GAS(doPost->handleGetRows_)から
+     * JSONを受け取ってテーブル描画。
+     ******************************************************************/
+    (function(){
+      // 公開関数：投稿成功後などに外から再読込したい場合に使う
+      window.viewerLoadRows = loadRows;
+
+      // ===== util: YYYY-MM-DD へフォーマット =====
+      const fmt = (d) => {
+        const z = (n) => String(n).padStart(2,'0');
+        return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
+      };
+
+      // 今日と状態
+      const today = new Date();
+      let centerDate = new Date(today);  // 週表示の中心
+      let view = "week";                 // "week" | "month"
+
+      // DOM参照
+      const $ = (id) => document.getElementById(id);
+      const el = {
+        btnToday: $('btnToday'),
+        btnPrev:  $('btnPrev'),
+        btnNext:  $('btnNext'),
+        datePicker: $('datePicker'),
+        rangeLabel: $('rangeLabel'),
+        thead: $('rowsThead'),
+        tbody: $('rowsTbody'),
+        status: $('viewerStatus')
+      };
+
+      // 初期日付（input type=date は YYYY-MM-DD 文字列）
+      el.datePicker.value = fmt(today);
+
+      // 週の範囲（前後7日＝計15日）
+      function getWeekRange(center){
+        const s = new Date(center);
+        s.setDate(s.getDate() - 7);
+        const e = new Date(center);
+        e.setDate(e.getDate() + 7);
+        return { start: s, end: e };
       }
-    });
 
-    function showToast(message) {
-      const toast = document.getElementById("toast");
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 2500);
-    }
+      // 月の指定（centerDateの年月）
+      function getMonthYm(center){
+        return { y: center.getFullYear(), m: center.getMonth()+1 };
+      }
+
+      // ラベル
+      function setRangeLabelWeek(s, e) {
+        el.rangeLabel.textContent = `Week: ${fmt(s)} 〜 ${fmt(e)}`;
+      }
+      function setRangeLabelMonth(y, m) {
+        el.rangeLabel.textContent = `Month: ${y}年${m}月`;
+      }
+
+      // テーブル描画
+      function renderTable(headers, rows){
+        // thead
+        el.thead.innerHTML = '';
+        const trh = document.createElement('tr');
+        (headers || []).forEach(h => {
+          const th = document.createElement('th');
+          th.textContent = h || '';
+          trh.appendChild(th);
+        });
+        el.thead.appendChild(trh);
+        // tbody
+        el.tbody.innerHTML = '';
+        (rows || []).forEach(r => {
+          const tr = document.createElement('tr');
+          r.forEach(c => {
+            const td = document.createElement('td');
+            td.textContent = (c==null) ? '' : String(c);
+            tr.appendChild(td);
+          });
+          el.tbody.appendChild(tr);
+        });
+      }
+
+      // 読み込み本体
+      async function loadRows(){
+        el.status.textContent = '読込中…';
+        try{
+          let url = '/api/getRows?';
+          if (view === 'week'){
+            const { start, end } = getWeekRange(centerDate);
+            setRangeLabelWeek(start, end);
+            const qs = new URLSearchParams({
+              view: 'week',
+              startDate: fmt(start),
+              endDate: fmt(end),
+              range: 'A:G',
+              limit: '0'  // 0=無制限
+            });
+            url += qs.toString();
+          } else {
+            const { y, m } = getMonthYm(centerDate);
+            setRangeLabelMonth(y, m);
+            const qs = new URLSearchParams({
+              view: 'month',
+              year: String(y),
+              month: String(m),
+              range: 'A:G',
+              limit: '0'
+            });
+            url += qs.toString();
+          }
+
+          const res = await fetch(url);
+          const json = await res.json().catch(() => ({}));
+          if (!json || !json.ok){
+            throw new Error(json && json.error ? json.error : '不明なエラー');
+          }
+          renderTable(json.headers || [], json.rows || []);
+          el.status.textContent = `${(json.rows || []).length} 行`;
+        } catch (err){
+          console.error(err);
+          el.status.textContent = '❌ ' + err.message;
+          renderTable([], []);
+        }
+      }
+
+      // ナビゲーション
+      el.btnToday.addEventListener('click', () => {
+        centerDate = new Date();
+        el.datePicker.value = fmt(centerDate);
+        loadRows();
+      });
+      el.btnPrev.addEventListener('click', () => {
+        if (view === 'week') centerDate.setDate(centerDate.getDate() - 7);
+        else centerDate.setMonth(centerDate.getMonth() - 1);
+        el.datePicker.value = fmt(centerDate);
+        loadRows();
+      });
+      el.btnNext.addEventListener('click', () => {
+        if (view === 'week') centerDate.setDate(centerDate.getDate() + 7);
+        else centerDate.setMonth(centerDate.getMonth() + 1);
+        el.datePicker.value = fmt(centerDate);
+        loadRows();
+      });
+
+      // ビューモード切替
+      [...document.querySelectorAll('input[name="viewmode"]')].forEach(r => {
+        r.addEventListener('change', (e) => {
+          view = e.target.value; // "week" | "month"
+          loadRows();
+        });
+      });
+
+      // 日付ピッカー変更
+      el.datePicker.addEventListener('change', (e) => {
+        const v = e.target.value;
+        if (v){
+          centerDate = new Date(v);
+          loadRows();
+        }
+      });
+
+      // 初回ロード
+      loadRows();
+    })();
   </script>
 </body>
 </html>
