@@ -1,5 +1,5 @@
 // /api/config.js
 const GAS_URL
-= "https://script.google.com/macros/s/AKfycbyBfLQWGQv0qIjkfmvFDrEg60rl3wcWc1A5yMDApfmquLfM7uKPaOa7U9uBjNpTTc8ucg/exec";
+= "https://script.google.com/macros/s/AKfycbwd-zqKU2EEu4hH9585a79yP63o3f5ip3FBwh5V7KcdDVbM-oq-LZ8DkgFgA3M628zgRw/exec";
 
 export { GAS_URL };
