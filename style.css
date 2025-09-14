@@ -85,3 +85,42 @@ button.primary{ background: var(--brand); color:#fff; border-color: var(--brand)
   button{ padding:7px 10px; font-size:13px; }
   .viewerbar input[type="date"]{ height:34px; font-size:13px; }
 }
+
+/* === 横スクロール根絶セット === */
+
+/* テーブル本体：横幅は親に合わせ、列幅は固定レイアウトで割り振り */
+#rowsTable{
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;   /* ← これで列が勝手に広がらない */
+  min-width: 0;          /* ← min-widthを無効化（以前の640pxを上書き） */
+  font-size: 12px;       /* ← テーブル内だけ少し小さく */
+}
+
+/* セル内はどんな文字列でも折り返す */
+#rowsTable th,
+#rowsTable td{
+  padding: .32rem .42rem;   /* ← 余白を少し圧縮 */
+  vertical-align: top;
+  white-space: pre-wrap;     /* 改行は維持 */
+  overflow-wrap: anywhere;   /* 英数字の連続も強制改行 */
+  word-break: break-word;    /* 念のため */
+}
+
+/* ヘッダ固定はそのまま維持 */
+#rowsTable thead th{
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  z-index: 1;
+}
+
+/* 数字系は狭めに（A=日／B=曜）*/
+#rowsTable th:nth-child(1),
+#rowsTable td:nth-child(1){ width: 2.8em; }  /* 日 */
+#rowsTable th:nth-child(2),
+#rowsTable td:nth-child(2){ width: 2.8em; }  /* 曜 */
+
+/* 備考はやや広めに（必要なら微調整OK）*/
+#rowsTable th:nth-child(5),
+#rowsTable td:nth-child(5){ width: 18%; }
